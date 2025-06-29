@@ -2,6 +2,7 @@
 #include <cmath>
 #include <iostream>
 #include <vector>
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 // 窗口尺寸
 const int WINDOW_WIDTH = 1200;
@@ -258,27 +259,144 @@ void drawConnector(float x, float y, float z) {
     glPopMatrix();
 }
 
-// 绘制主键盘外壳（完全按照草图的梯形设计）
+// 绘制直角梯形主键盘外壳（后大前小）
 void drawMainKeyboardShell() {
     setMaterial(shellMaterial);
     
     glPushMatrix();
+    glTranslatef(0, -0.2f, 0);
     
-    // 主键盘的梯形外壳 - 后高前低，完全按照草图
-    glTranslatef(0, -0.3f, 0);
+    // 直角梯形外壳 - 后大前小
+    glBegin(GL_QUADS);
     
-    // 主体梯形外壳 - 底部宽，顶部稍窄，后面高
-    drawTrapezoid(15.0f, 13.5f, 1.2f, 6.0f);
+    float backWidth = 17.0f;     // 后面宽度（较宽）
+    float frontWidth = 10.0f;    // 前面宽度（较窄）
+    float depth = 7.0f;          // 深度
+    float height = 1.0f;         // 高度
     
-    // 键盘区域的平台
-    glTranslatef(0, 0.5f, 0);
-    setMaterial(accentMaterial);
-    drawTrapezoid(13.5f, 12.5f, 0.3f, 5.0f);
+    float halfBackWidth = backWidth / 2.0f;
+    float halfFrontWidth = halfBackWidth;
+    float halfDepth = depth / 2.0f;
+    float halfHeight = height / 2.0f;
+    // 底面（平面，梯形）- 这是基底
+    glNormal3f(0, -1, 0);
+    glVertex3f(-halfBackWidth, -halfHeight, -halfDepth);     // 后左
+    glVertex3f(halfBackWidth, -halfHeight, -halfDepth);      // 后右
+    glVertex3f(halfFrontWidth, -halfHeight, halfDepth);      // 前右
+    glVertex3f(-halfFrontWidth, -halfHeight, halfDepth);     // 前左
+    
+    // 顶面（平面，梯形）
+    glNormal3f(0, 1, 0);
+    glVertex3f(-halfBackWidth, halfHeight, -halfDepth);      // 后左
+    glVertex3f(-halfFrontWidth, halfHeight/2, halfDepth);    // 前左
+    glVertex3f(halfFrontWidth, halfHeight/2, halfDepth);     // 前右
+    glVertex3f(halfBackWidth, halfHeight, -halfDepth);       // 后右
+    
+    // 前面（较窄的矩形侧面）
+    glNormal3f(0, 0, 1);
+    glVertex3f(-halfFrontWidth, -halfHeight, halfDepth);
+    glVertex3f(halfFrontWidth, -halfHeight, halfDepth);
+    glVertex3f(halfFrontWidth, halfHeight/2, halfDepth);
+    glVertex3f(-halfFrontWidth, halfHeight/2, halfDepth);
+
+    
+    
+    // 后面（较宽的矩形侧面）
+    glNormal3f(0, 0, -1);
+    glVertex3f(-halfBackWidth, -halfHeight, -halfDepth);
+    glVertex3f(-halfBackWidth, halfHeight, -halfDepth);
+    glVertex3f(halfBackWidth, halfHeight, -halfDepth);
+    glVertex3f(halfBackWidth, -halfHeight, -halfDepth);
+    
+    // 左侧面（矩形侧面）
+    glNormal3f(-1, 0, 0);
+    glVertex3f(-halfBackWidth, -halfHeight, -halfDepth);
+    glVertex3f(-halfFrontWidth, -halfHeight, halfDepth);
+    glVertex3f(-halfFrontWidth, halfHeight/2, halfDepth);
+    glVertex3f(-halfBackWidth, halfHeight, -halfDepth);
+    
+    // 右侧面（矩形侧面）
+    glNormal3f(1, 0, 0);
+    glVertex3f(halfBackWidth, -halfHeight, -halfDepth);
+    glVertex3f(halfBackWidth, halfHeight, -halfDepth);
+    glVertex3f(halfFrontWidth, halfHeight/2, halfDepth);
+    glVertex3f(halfFrontWidth, -halfHeight, halfDepth);
+
+    // 左腕托左侧面
+    glNormal3f(-1, 0, 0);
+    glVertex3f(-halfBackWidth, -halfHeight, halfDepth);
+    glVertex3f(-halfFrontWidth, -halfHeight, halfDepth+1.0f);
+    glVertex3f(-halfFrontWidth, halfHeight/3, halfDepth+1.0f);
+    glVertex3f(-halfBackWidth, halfHeight/2, halfDepth);
+
+        // 左腕托左前面
+    glNormal3f(0, 0, 1);
+    glVertex3f(-halfBackWidth, halfHeight/3, halfDepth+1.0f);
+    glVertex3f(-halfFrontWidth+4.0f, halfHeight/3, halfDepth+1.0f);
+    glVertex3f(-halfFrontWidth+4.0f, -halfHeight, halfDepth+1.0f);
+    glVertex3f(-halfBackWidth, -halfHeight, halfDepth+1.0f);
+
+
+    // 左腕托顶面
+    glNormal3f(0, 1, 0);
+    glVertex3f(-halfBackWidth, halfHeight/2, halfDepth);
+    glVertex3f(-halfFrontWidth, halfHeight/3, halfDepth+1.0f);
+    glVertex3f(-halfFrontWidth+4.0f, halfHeight/3, halfDepth+1.0f);
+    glVertex3f(-halfBackWidth+5.0f, halfHeight/2, halfDepth);
+
+        // 左腕托底面
+    glNormal3f(0, -1, 0);
+    glVertex3f(-halfBackWidth, -halfHeight, halfDepth);
+    glVertex3f(-halfFrontWidth, -halfHeight, halfDepth+1.0f);
+    glVertex3f(-halfFrontWidth+4.0f, -halfHeight, halfDepth+1.0f);
+    glVertex3f(-halfBackWidth+5.0f, -halfHeight, halfDepth);
+
+    // 左腕托右侧面
+    glNormal3f(1, 0, 1);
+    glVertex3f(-halfBackWidth+5.0f, -halfHeight, halfDepth);
+    glVertex3f(-halfFrontWidth+4.0f, -halfHeight, halfDepth+1.0f);
+    glVertex3f(-halfFrontWidth+4.0f, halfHeight/3, halfDepth+1.0f);
+    glVertex3f(-halfBackWidth+5.0f, halfHeight/2, halfDepth);
+
+    // 右腕托右侧面
+    glNormal3f(1, 0, 0);
+    glVertex3f(halfBackWidth, -halfHeight, halfDepth);
+    glVertex3f(halfBackWidth, halfHeight/2, halfDepth);
+    glVertex3f(halfFrontWidth, halfHeight/6, halfDepth+2.0f);
+    glVertex3f(halfFrontWidth, -halfHeight, halfDepth+2.0f);
+
+
+
+    // 腕托内右侧面
+    glNormal3f(1, 0, 0);
+    glVertex3f(halfBackWidth-4.0f, -halfHeight, halfDepth);
+    glVertex3f(halfBackWidth-3.0f, halfHeight/2, halfDepth);
+    glVertex3f(halfFrontWidth-3.0f, halfHeight/3, halfDepth+1.0f);
+    glVertex3f(halfFrontWidth-4.0f, -halfHeight, halfDepth+1.0f);
+
+
+    // 腕托右顶面
+    glNormal3f(0, 1, 0);
+    glVertex3f(halfBackWidth, halfHeight/2, halfDepth);
+    glVertex3f(halfFrontWidth, halfHeight/3, halfDepth+1.0f);
+    glVertex3f(halfFrontWidth-2.0f, halfHeight/3, halfDepth+1.0f);
+    glVertex3f(halfBackWidth-3.0f, halfHeight/2, halfDepth);
+
+
+
+    // 腕托右底面
+    glNormal3f(0, -1, 0);
+    glVertex3f(halfBackWidth, -halfHeight, halfDepth);
+    glVertex3f(halfFrontWidth, -halfHeight, halfDepth+1.0f);
+    glVertex3f(halfFrontWidth-2.0f, -halfHeight, halfDepth+1.0f);
+    glVertex3f(halfBackWidth-3.0f, -halfHeight, halfDepth); 
+
+    glEnd();
     
     glPopMatrix();
 }
 
-// 绘制左侧模块外壳（按照草图的独特轮廓）
+// 绘制左侧模块外壳（类似主键盘的直角梯形设计）
 void drawLeftModuleShell() {
     if (!showLeftModule) return;
     
@@ -287,29 +405,86 @@ void drawLeftModuleShell() {
     
     setMaterial(leftModuleMaterial);
     
-    // 草图中左模块的特殊形状 - 前窄后宽的不规则四边形
-    glTranslatef(0, -0.3f, 0);
-    
-    // 使用不规则形状，模拟草图中的轮廓
-    drawCustomShape(5.5f, 3.5f, 1.0f, 3.0f, 4.5f);
-    
-    // 顶部控制面板区域
-    glTranslatef(0, 0.4f, 0);
-    setMaterial(accentMaterial);
-    drawCustomShape(4.8f, 3.0f, 0.4f, 2.5f, 4.0f);
-    
-    // 圆形控制区域的特殊凹槽
     glPushMatrix();
-    glTranslatef(0, 0.15f, -0.5f);
-    drawCylinder(1.3f, 0.1f);
-    glPopMatrix();
+    glTranslatef(0, -0.2f, 0);
+    
+    // 左侧模块的直角梯形外壳 - 后大前小（与主键盘类似）
+    glBegin(GL_QUADS);
+    
+    float backWidth = 3.0f;      // 后面宽度（较宽）
+    float frontWidth = 3.0f;     // 前面宽度（较窄）
+    float depth = 7.0f;          // 深度
+    float height = 1.0f;         // 高度
+    
+    float halfBackWidth = backWidth / 2.0f;
+    float halfFrontWidth = frontWidth / 2.0f;
+    float halfDepth = depth / 2.0f;
+    float halfHeight = height / 2.0f;
+    
+    // 底面（平面，梯形）- 这是基底
+    glNormal3f(0, -1, 0);
+    glVertex3f(-halfBackWidth, -halfHeight, -halfDepth);     // 后左
+    glVertex3f(halfBackWidth, -halfHeight, -halfDepth);      // 后右
+    glVertex3f(halfFrontWidth, -halfHeight, halfDepth);      // 前右
+    glVertex3f(-halfFrontWidth, -halfHeight, halfDepth);     // 前左
+    
+    // 顶面（平面，梯形）
+    glNormal3f(0, 1, 0);
+    glVertex3f(-halfBackWidth, halfHeight, -halfDepth);      // 后左
+    glVertex3f(-halfFrontWidth, halfHeight/2, halfDepth);    // 前左
+    glVertex3f(halfFrontWidth, halfHeight/2, halfDepth);     // 前右
+    glVertex3f(halfBackWidth, halfHeight, -halfDepth);       // 后右
+    
+    // 前面（较窄的矩形侧面）
+    glNormal3f(0, 0, 1);
+    glVertex3f(-halfFrontWidth, -halfHeight, halfDepth);
+    glVertex3f(halfFrontWidth, -halfHeight, halfDepth);
+    glVertex3f(halfFrontWidth, halfHeight/2, halfDepth);
+    glVertex3f(-halfFrontWidth, halfHeight/2, halfDepth);
+    
+    // 后面（较宽的矩形侧面）
+    glNormal3f(0, 0, -1);
+    glVertex3f(-halfBackWidth, -halfHeight, -halfDepth);
+    glVertex3f(-halfBackWidth, halfHeight, -halfDepth);
+    glVertex3f(halfBackWidth, halfHeight, -halfDepth);
+    glVertex3f(halfBackWidth, -halfHeight, -halfDepth);
+    
+    // 左侧面（梯形侧面）
+    glNormal3f(-1, 0, 0);
+    glVertex3f(-halfBackWidth, -halfHeight, -halfDepth);
+    glVertex3f(-halfFrontWidth, -halfHeight, halfDepth);
+    glVertex3f(-halfFrontWidth, halfHeight/2, halfDepth);
+    glVertex3f(-halfBackWidth, halfHeight, -halfDepth);
+    
+    // 右侧面（梯形侧面）
+    glNormal3f(1, 0, 0);
+    glVertex3f(halfBackWidth, -halfHeight, -halfDepth);
+    glVertex3f(halfBackWidth, halfHeight, -halfDepth);
+    glVertex3f(halfFrontWidth, halfHeight/2, halfDepth);
+    glVertex3f(halfFrontWidth, -halfHeight, halfDepth);
+    
+    glEnd();
+    
+    // 添加轨迹球专用凹槽
+    // glPushMatrix();
+    // glTranslatef(0, halfHeight/2 + 0.1f, -1.0f);
+    // setMaterial(accentMaterial);
+    // drawCylinder(1.0f, 0.15f);  // 轨迹球凹槽
+    // glPopMatrix();
+    
+    // 添加前端控制区域凹槽
+    // glPushMatrix();
+    // glTranslatef(0, halfHeight/2 + 0.05f, 1.0f);
+    // setMaterial(accentMaterial);
+    // drawCube(3.0f, 0.1f, 2.0f);  // 按钮控制区域
+    // glPopMatrix();
     
     glPopMatrix();
     
     glPopMatrix();
 }
 
-// 绘制右侧模块外壳（按照草图的特殊轮廓）
+// 绘制右侧模块外壳（类似主键盘的直角梯形设计）
 void drawRightModuleShell() {
     if (!showRightModule) return;
     
@@ -318,21 +493,78 @@ void drawRightModuleShell() {
     
     setMaterial(rightModuleMaterial);
     
-    // 草图中右模块的特殊外形
-    glTranslatef(0, -0.3f, 0);
-    
-    // 右模块的特殊形状 - 与左模块相对称但有自己的特征
-    drawCustomShape(4.8f, 4.2f, 1.0f, 4.0f, 3.5f);
-    
-    // 数字键盘区域平台
-    glTranslatef(0, 0.4f, 0);
-    setMaterial(accentMaterial);
-    drawCustomShape(4.2f, 3.8f, 0.4f, 3.5f, 3.0f);
-    
-    // 右侧特殊的垂直突起区域
     glPushMatrix();
-    glTranslatef(1.5f, 0.15f, 0);
-    drawCube(0.8f, 0.6f, 3.0f);
+    glTranslatef(0, -0.2f, 0);
+    
+    // 右侧模块的直角梯形外壳 - 后大前小（与主键盘类似）
+    glBegin(GL_QUADS);
+    
+    float backWidth =3.5f;      // 后面宽度（较宽）
+    float frontWidth = 3.5f;     // 前面宽度（较窄）
+    float depth = 7.0f;          // 深度
+    float height = 1.0f;         // 高度
+    
+    float halfBackWidth = backWidth / 2.0f;
+    float halfFrontWidth = frontWidth / 2.0f;
+    float halfDepth = depth / 2.0f;
+    float halfHeight = height / 2.0f;
+    
+    // 底面（平面，梯形）- 这是基底
+    glNormal3f(0, -1, 0);
+    glVertex3f(-halfBackWidth, -halfHeight, -halfDepth);     // 后左
+    glVertex3f(halfBackWidth, -halfHeight, -halfDepth);      // 后右
+    glVertex3f(halfFrontWidth, -halfHeight, halfDepth);      // 前右
+    glVertex3f(-halfFrontWidth, -halfHeight, halfDepth);     // 前左
+    
+    // 顶面（平面，梯形）
+    glNormal3f(0, 1, 0);
+    glVertex3f(-halfBackWidth, halfHeight, -halfDepth);      // 后左
+    glVertex3f(-halfFrontWidth, halfHeight/2, halfDepth);    // 前左
+    glVertex3f(halfFrontWidth, halfHeight/2, halfDepth);     // 前右
+    glVertex3f(halfBackWidth, halfHeight, -halfDepth);       // 后右
+    
+    // 前面（较窄的矩形侧面）
+    glNormal3f(0, 0, 1);
+    glVertex3f(-halfFrontWidth, -halfHeight, halfDepth);
+    glVertex3f(halfFrontWidth, -halfHeight, halfDepth);
+    glVertex3f(halfFrontWidth, halfHeight/2, halfDepth);
+    glVertex3f(-halfFrontWidth, halfHeight/2, halfDepth);
+    
+    // 后面（较宽的矩形侧面）
+    glNormal3f(0, 0, -1);
+    glVertex3f(-halfBackWidth, -halfHeight, -halfDepth);
+    glVertex3f(-halfBackWidth, halfHeight, -halfDepth);
+    glVertex3f(halfBackWidth, halfHeight, -halfDepth);
+    glVertex3f(halfBackWidth, -halfHeight, -halfDepth);
+    
+    // 左侧面（梯形侧面）
+    glNormal3f(-1, 0, 0);
+    glVertex3f(-halfBackWidth, -halfHeight, -halfDepth);
+    glVertex3f(-halfFrontWidth, -halfHeight, halfDepth);
+    glVertex3f(-halfFrontWidth, halfHeight/2, halfDepth);
+    glVertex3f(-halfBackWidth, halfHeight, -halfDepth);
+    
+    // 右侧面（梯形侧面）
+    glNormal3f(1, 0, 0);
+    glVertex3f(halfBackWidth, -halfHeight, -halfDepth);
+    glVertex3f(halfBackWidth, halfHeight, -halfDepth);
+    glVertex3f(halfFrontWidth, halfHeight/2, halfDepth);
+    glVertex3f(halfFrontWidth, -halfHeight, halfDepth);
+    
+    glEnd();
+    
+    // 添加数字键盘专用区域凹槽
+    // glPushMatrix();
+    // glTranslatef(0, halfHeight/2 + 0.05f, 0);
+    // setMaterial(accentMaterial);
+    // drawCube(3.5f, 0.1f, 4.0f);  // 数字键盘区域平台
+    // glPopMatrix();
+    
+    // 添加右侧功能区域标识
+    glPushMatrix();
+    glTranslatef(1.0f, halfHeight/2 + 0.08f, -1.5f);
+    setMaterial(accentMaterial);
+    drawCube(0.8f, 0.05f, 1.0f);  // 特殊功能区域
     glPopMatrix();
     
     glPopMatrix();
@@ -340,7 +572,7 @@ void drawRightModuleShell() {
     glPopMatrix();
 }
 
-// 绘制上侧模块外壳（完全按照草图的长条形设计）
+// 绘制上侧模块外壳（类似主键盘的直角梯形设计，作为主外壳的延伸）
 void drawTopModuleShell() {
     if (!showTopModule) return;
     
@@ -349,42 +581,85 @@ void drawTopModuleShell() {
     
     setMaterial(topModuleMaterial);
     
-    // 草图中上模块的长条形外壳 - 明显的长条形状
-    glTranslatef(0, -0.25f, 0);
+    glPushMatrix();
+    glTranslatef(0, -0.2f, 0);
     
-    // 主体长条形外壳
-    drawCube(12.0f, 0.8f, 2.8f);
+    // 上侧模块的直角梯形外壳 - 作为主外壳的延伸
+    glBegin(GL_QUADS);
     
-    // 顶部控制面板平台
-    glTranslatef(0, 0.3f, 0);
+    float backWidth = 17.0f;     // 后面宽度（与主键盘前端相接）
+    float frontWidth = 17.0f;     // 前面宽度（较窄）
+    float depth = 3.0f;          // 深度（比主键盘浅）
+    float height = 1.0f;         // 高度（与主键盘一致）
+    
+    float halfBackWidth = backWidth / 2.0f;
+    float halfFrontWidth = frontWidth / 2.0f;
+    float halfDepth = depth / 2.0f;
+    float halfHeight = height / 2.0f;
+    
+    // 底面（平面，梯形）- 这是基底
+    glNormal3f(0, -1, 0);
+    glVertex3f(-halfBackWidth, -halfHeight, -halfDepth);     // 后左
+    glVertex3f(halfBackWidth, -halfHeight, -halfDepth);      // 后右
+    glVertex3f(halfFrontWidth, -halfHeight, halfDepth);      // 前右
+    glVertex3f(-halfFrontWidth, -halfHeight, halfDepth);     // 前左
+    
+    // 顶面（平面，梯形）
+    glNormal3f(0, 1, 0);
+    glVertex3f(-halfBackWidth, halfHeight*(1+2/7.0), -halfDepth);      // 后左
+    glVertex3f(-halfFrontWidth, halfHeight, halfDepth);    // 前左
+    glVertex3f(halfFrontWidth, halfHeight, halfDepth);     // 前右
+    glVertex3f(halfBackWidth, halfHeight*(1+2/7.0), -halfDepth);       // 后右
+    
+    // 前面（较窄的矩形侧面）
+    glNormal3f(0, 0, 1);
+    glVertex3f(-halfFrontWidth, -halfHeight, halfDepth);
+    glVertex3f(halfFrontWidth, -halfHeight, halfDepth);
+    glVertex3f(halfFrontWidth, halfHeight, halfDepth);
+    glVertex3f(-halfFrontWidth, halfHeight, halfDepth);
+    
+    // 后面（较宽的矩形侧面）- 与主键盘连接处
+    glNormal3f(0, 0, -1);
+    glVertex3f(-halfBackWidth, -halfHeight, -halfDepth);
+    glVertex3f(-halfBackWidth, halfHeight*(1+2/7.0), -halfDepth);
+    glVertex3f(halfBackWidth, halfHeight*(1+2/7.0), -halfDepth);
+    glVertex3f(halfBackWidth, -halfHeight, -halfDepth);
+    
+    // 左侧面（梯形侧面）
+    glNormal3f(-1, 0, 0);
+    glVertex3f(-halfBackWidth, -halfHeight, -halfDepth);
+    glVertex3f(-halfFrontWidth, -halfHeight, halfDepth);
+    glVertex3f(-halfFrontWidth, halfHeight, halfDepth);
+    glVertex3f(-halfBackWidth, halfHeight*(1+2/7.0), -halfDepth);
+    
+    // 右侧面（梯形侧面）
+    glNormal3f(1, 0, 0);
+    glVertex3f(halfBackWidth, -halfHeight, -halfDepth);
+    glVertex3f(halfBackWidth, halfHeight*(1+2/7.0), -halfDepth);
+    glVertex3f(halfFrontWidth, halfHeight, halfDepth);
+    glVertex3f(halfFrontWidth, -halfHeight, halfDepth);
+    
+    glEnd();
+    
+    // 添加旋钮专用区域凹槽（左侧）
+    glPushMatrix();
+    glTranslatef(-2.5f, halfHeight/2 + 0.1f, 0);
     setMaterial(accentMaterial);
-    drawCube(11.5f, 0.3f, 2.4f);
-    
-    // 三个功能区域的分隔
-    setMaterial(shellMaterial);
-    
-    // 旋钮区域（左侧）
-    glPushMatrix();
-    glTranslatef(-3.5f, 0.1f, 0);
-    drawCube(3.0f, 0.2f, 2.0f);
-    // 大圆形凹槽
-    glTranslatef(0, 0.05f, 0);
-    drawCylinder(1.2f, 0.1f);
+    drawCylinder(1.0f, 0.15f);  // 旋钮凹槽
     glPopMatrix();
     
-    // 按钮控制区域（中间）
+    // 添加控制按钮区域平台（中间）
     glPushMatrix();
-    glTranslatef(0, 0.1f, 0);
-    drawCube(4.0f, 0.2f, 2.0f);
+    glTranslatef(0, halfHeight/2 + 0.05f, 0);
+    setMaterial(accentMaterial);
+    drawCube(4.0f, 0.1f, 2.0f);  // 按钮控制区域
     glPopMatrix();
     
-    // 显示屏区域（右侧）
+    // 添加显示屏区域凹槽（右侧）
     glPushMatrix();
-    glTranslatef(3.5f, 0.1f, 0);
-    drawCube(3.0f, 0.2f, 2.0f);
-    // 显示屏凹槽
-    glTranslatef(0, 0.05f, 0);
-    drawCube(2.5f, 0.08f, 1.5f);
+    glTranslatef(2.5f, halfHeight/2 + 0.08f, 0);
+    setMaterial(accentMaterial);
+    drawCube(2.5f, 0.08f, 1.5f);  // 显示屏区域
     glPopMatrix();
     
     glPopMatrix();
@@ -392,26 +667,136 @@ void drawTopModuleShell() {
     glPopMatrix();
 }
 
-// 绘制键帽
-void drawKeycap(float x, float y, float z, float size, bool pressed = false) {
+
+// 绘制棱台（用于键帽）
+void drawTruncatedPyramid(float bottomWidth, float bottomDepth, float topWidth, float topDepth, float height) {
+    glBegin(GL_QUADS);
+    
+    float halfBottomWidth = bottomWidth / 2.0f;
+    float halfBottomDepth = bottomDepth / 2.0f;
+    float halfTopWidth = topWidth / 2.0f;
+    float halfTopDepth = topDepth / 2.0f;
+    float halfHeight = height / 2.0f;
+    
+    // 前面
+    glNormal3f(0, 0, 1);
+    glVertex3f(-halfBottomWidth, -halfHeight, halfBottomDepth);
+    glVertex3f(halfBottomWidth, -halfHeight, halfBottomDepth);
+    glVertex3f(halfTopWidth, halfHeight, halfTopDepth);
+    glVertex3f(-halfTopWidth, halfHeight, halfTopDepth);
+    
+    // 后面
+    glNormal3f(0, 0, -1);
+    glVertex3f(-halfBottomWidth, -halfHeight, -halfBottomDepth);
+    glVertex3f(-halfTopWidth, halfHeight, -halfTopDepth);
+    glVertex3f(halfTopWidth, halfHeight, -halfTopDepth);
+    glVertex3f(halfBottomWidth, -halfHeight, -halfBottomDepth);
+    
+    // 左侧面
+    glNormal3f(-1, 0, 0);
+    glVertex3f(-halfBottomWidth, -halfHeight, -halfBottomDepth);
+    glVertex3f(-halfBottomWidth, -halfHeight, halfBottomDepth);
+    glVertex3f(-halfTopWidth, halfHeight, halfTopDepth);
+    glVertex3f(-halfTopWidth, halfHeight, -halfTopDepth);
+    
+    // 右侧面
+    glNormal3f(1, 0, 0);
+    glVertex3f(halfBottomWidth, -halfHeight, -halfBottomDepth);
+    glVertex3f(halfTopWidth, halfHeight, -halfTopDepth);
+    glVertex3f(halfTopWidth, halfHeight, halfTopDepth);
+    glVertex3f(halfBottomWidth, -halfHeight, halfBottomDepth);
+    
+    // 顶面
+    glNormal3f(0, 1, 0);
+    glVertex3f(-halfTopWidth, halfHeight, -halfTopDepth);
+    glVertex3f(-halfTopWidth, halfHeight, halfTopDepth);
+    glVertex3f(halfTopWidth, halfHeight, halfTopDepth);
+    glVertex3f(halfTopWidth, halfHeight, -halfTopDepth);
+    
+    // 底面
+    glNormal3f(0, -1, 0);
+    glVertex3f(-halfBottomWidth, -halfHeight, -halfBottomDepth);
+    glVertex3f(halfBottomWidth, -halfHeight, -halfBottomDepth);
+    glVertex3f(halfBottomWidth, -halfHeight, halfBottomDepth);
+    glVertex3f(-halfBottomWidth, -halfHeight, halfBottomDepth);
+    
+    glEnd();
+}
+
+// 绘制键帽（使用棱台形状））
+void drawKeycap(float x, float y, float z, float width, float depth, bool pressed = false) {
     glPushMatrix();
     glTranslatef(x, y + (pressed ? -0.02f : 0), z);
     setMaterial(keycapMaterial);
     
-    // 键帽主体 - 略微倾斜的设计
+    // 键帽主体 - 梯形设计
     glPushMatrix();
-    glScalef(size * 0.85f, 0.12f, size * 0.85f);
-    glutSolidCube(1.0);
-    glPopMatrix();
-    
-    // 键帽顶部略小的平面
-    glPushMatrix();
-    glTranslatef(0, 0.08f, 0);
-    glScalef(size * 0.7f, 0.02f, size * 0.7f);
+    glScalef(width * 0.85f, 0.12f, depth * 0.85f);
     glutSolidCube(1.0);
     glPopMatrix();
     
     glPopMatrix();
+}
+
+
+void drawSpace() {
+    // 绘制空格键的棱台形状（上窄下宽）
+    glBegin(GL_QUADS);
+    
+    float spaceWidth = 6.25f * 1.0f; // 空格键宽度
+    float spaceDepth = 0.8f;
+    float spaceHeight = 0.12f;
+    float topScale = 0.85f;
+    
+    float halfWidth = spaceWidth / 2.0f;
+    float halfDepth = spaceDepth / 2.0f;
+    float halfHeight = spaceHeight / 2.0f;
+    float topHalfWidth = halfWidth * topScale;
+    float topHalfDepth = halfDepth * topScale;
+    
+    // 前面 (梯形)
+    glNormal3f(0, 0, 1);
+    glVertex3f(-halfWidth, -halfHeight, halfDepth);
+    glVertex3f(halfWidth, -halfHeight, halfDepth);
+    glVertex3f(topHalfWidth, halfHeight, topHalfDepth);
+    glVertex3f(-topHalfWidth, halfHeight, topHalfDepth);
+    
+    // 后面 (梯形)
+    glNormal3f(0, 0, -1);
+    glVertex3f(-halfWidth, -halfHeight, -halfDepth);
+    glVertex3f(-topHalfWidth, halfHeight, -topHalfDepth);
+    glVertex3f(topHalfWidth, halfHeight, -topHalfDepth);
+    glVertex3f(halfWidth, -halfHeight, -halfDepth);
+    
+    // 左侧面 (梯形)
+    glNormal3f(-1, 0, 0);
+    glVertex3f(-halfWidth, -halfHeight, -halfDepth);
+    glVertex3f(-halfWidth, -halfHeight, halfDepth);
+    glVertex3f(-topHalfWidth, halfHeight, topHalfDepth);
+    glVertex3f(-topHalfWidth, halfHeight, -topHalfDepth);
+    
+    // 右侧面 (梯形)
+    glNormal3f(1, 0, 0);
+    glVertex3f(halfWidth, -halfHeight, -halfDepth);
+    glVertex3f(topHalfWidth, halfHeight, -topHalfDepth);
+    glVertex3f(topHalfWidth, halfHeight, topHalfDepth);
+    glVertex3f(halfWidth, -halfHeight, halfDepth);
+    
+    // 顶面 (较小的矩形)
+    glNormal3f(0, 1, 0);
+    glVertex3f(-topHalfWidth, halfHeight, -topHalfDepth);
+    glVertex3f(-topHalfWidth, halfHeight, topHalfDepth);
+    glVertex3f(topHalfWidth, halfHeight, topHalfDepth);
+    glVertex3f(topHalfWidth, halfHeight, -topHalfDepth);
+    
+    // 底面 (较大的矩形)
+    glNormal3f(0, -1, 0);
+    glVertex3f(-halfWidth, -halfHeight, -halfDepth);
+    glVertex3f(halfWidth, -halfHeight, -halfDepth);
+    glVertex3f(halfWidth, -halfHeight, halfDepth);
+    glVertex3f(-halfWidth, -halfHeight, halfDepth);
+    
+    glEnd();
 }
 
 // 绘制主键盘
@@ -421,63 +806,137 @@ void drawMainKeyboard() {
     // 键盘主底座 - 更厚更有立体感
     setMaterial(keyboardMaterial);
     glTranslatef(0, -0.2f, 0);
-    drawCube(14.0f, 0.4f, 5.0f);
-    
-    // 键盘斜面设计
-    glTranslatef(0, 0.1f, -1.0f);
-    glRotatef(5, 1, 0, 0);  // 轻微向后倾斜
-    drawCube(13.5f, 0.2f, 4.0f);
+    glRotatef(3, 1, 0, 0);  // 轻微向后倾斜
+    drawCube(15.0f, 0.3f, 7.0f);
     
     glPopMatrix();
     
-    // 键盘布局 - 更真实的间距
-    float keySize = 0.8f;
     float keySpacing = 1.0f;
+    float rowSpacing = 1.0f;
     
-    // ESC键和功能键区域
-    drawKeycap(-6.5f, 0.1f, -2.2f, keySize * 0.8f); // ESC
+    // 定义每行的高度（阶梯状）
+    float funcKeyHeight = 0.3f;    // 功能键最低
+    float numberRowHeight = 0.24f;  // 数字行
+    float qwertyRowHeight = 0.20f;  // QWERTY行最高
+    float asdfRowHeight = 0.18f;    // ASDF行
+    float zxcvRowHeight = 0.14f;    // ZXCV行
+    float spaceRowHeight = 0.10f;   // 空格键行
     
-    // F1-F12功能键（分组）
+    // 第1行：ESC + F1-F12 + Delete
+    drawKeycap(-8.0f, funcKeyHeight, -2.0f, 0.8f, 0.8f);  // ESC
+    
+    // F1-F4组
     for (int i = 0; i < 4; i++) {
-        drawKeycap(-4.0f + i * keySpacing, 0.1f, -2.2f, keySize * 0.8f);
+        drawKeycap(-6.5f + i * keySpacing, funcKeyHeight, -2.0f, 0.8f, 0.8f);
     }
+    
+    // F5-F8组
     for (int i = 0; i < 4; i++) {
-        drawKeycap(0.5f + i * keySpacing, 0.1f, -2.2f, keySize * 0.8f);
+        drawKeycap(-2.0f + i * keySpacing, funcKeyHeight, -2.0f, 0.8f, 0.8f);
     }
+    
+    // F9-F12组
     for (int i = 0; i < 4; i++) {
-        drawKeycap(5.0f + i * keySpacing, 0.1f, -2.2f, keySize * 0.8f);
+        drawKeycap(2.5f + i * keySpacing, funcKeyHeight, -2.0f, 0.8f, 0.8f);
     }
     
-    // 数字行
-    for (int i = 0; i < 13; i++) {
-        float x = (i - 6.0f) * keySpacing;
-        drawKeycap(x, 0.1f, -1.0f, keySize);
-    }
+    drawKeycap(7.0f, funcKeyHeight, -2.0f, 0.8f, 0.8f);   // Delete
     
-    // QWERTY行
-    for (int i = 0; i < 13; i++) {
-        float x = (i - 6.0f) * keySpacing;
-        drawKeycap(x, 0.1f, 0.0f, keySize);
-    }
+    // 第2行：数字行 + Backspace
+    // `~键
+    drawKeycap(-8.0f, numberRowHeight, -1.0f, 0.8f, 0.8f);
     
-    // ASDF行
-    for (int i = 0; i < 12; i++) {
-        float x = (i - 5.5f) * keySpacing;
-        drawKeycap(x, 0.1f, 1.0f, keySize);
-    }
-    
-    // ZXCV行
+    // 1-9, 0键
     for (int i = 0; i < 10; i++) {
-        float x = (i - 4.5f) * keySpacing;
-        drawKeycap(x, 0.1f, 2.0f, keySize);
+        drawKeycap(-7.0f + i * keySpacing, numberRowHeight, -1.0f, 0.8f, 0.8f);
     }
     
-    // 空格键
+    // -=键
+    drawKeycap(3.0f, numberRowHeight, -1.0f, 0.8f, 0.8f);  // -
+    drawKeycap(4.0f, numberRowHeight, -1.0f, 0.8f, 0.8f);  // =
+    
+    // Backspace (1.5倍宽)
+    drawKeycap(5.25f, numberRowHeight, -1.0f, 1.5f, 0.8f);  // 修正位置
+    
+    // 第3行：Tab + QWERTY行 + \|键
+    // Tab (1.5倍宽)
+    drawKeycap(-7.25f, qwertyRowHeight, 0.0f, 1.5f, 0.8f);  // 修正位置
+    
+    // QWERTYUIOP键
+    for (int i = 0; i < 10; i++) {
+        drawKeycap(-6.0f + i * keySpacing, qwertyRowHeight, 0.0f, 0.8f, 0.8f);  // 修正起始位置
+    }
+    
+    // []键
+    drawKeycap(4.0f, qwertyRowHeight, 0.0f, 0.8f, 0.8f);  // [ 修正位置
+    drawKeycap(5.0f, qwertyRowHeight, 0.0f, 0.8f, 0.8f);  // ] 修正位置
+
+    // \|键 (1.5倍宽)
+    drawKeycap(6.25f, qwertyRowHeight, 0.0f, 1.5f, 0.8f);  // 修正位置
+    
+    // 第4行：Caps + ASDF行 + Enter
+    // Caps Lock (1.75倍宽)
+    drawKeycap(-6.875f, asdfRowHeight, 1.0f, 1.75f, 0.8f);  // 修正位置
+    
+    // ASDFGHJKL键
+    for (int i = 0; i < 9; i++) {
+        drawKeycap(-5.5f + i * keySpacing, asdfRowHeight, 1.0f, 0.8f, 0.8f);  // 修正起始位置
+    }
+    
+    // ;'键
+    drawKeycap(3.5f, asdfRowHeight, 1.0f, 0.8f, 0.8f);   // ; 修正位置
+    drawKeycap(4.5f, asdfRowHeight, 1.0f, 0.8f, 0.8f);   // ' 修正位置
+    
+    // Enter (2.25倍宽)
+    drawKeycap(6.125f, asdfRowHeight, 1.0f, 2.25f, 0.8f);  // 修正位置
+    
+    // 第5行：Shift + ZXCV行 + Shift + 方向键
+    // Left Shift (2.25倍宽)
+    drawKeycap(-6.375f, zxcvRowHeight, 2.0f, 2.25f, 0.8f);  // 修正位置
+    
+    // ZXCVBNM键
+    for (int i = 0; i < 7; i++) {
+        drawKeycap(-4.5f + i * keySpacing, zxcvRowHeight, 2.0f, 0.8f, 0.8f);  // 修正起始位置
+    }
+    
+    // ,.键
+    drawKeycap(2.5f, zxcvRowHeight, 2.0f, 0.8f, 0.8f);    // , 修正位置
+    drawKeycap(3.5f, zxcvRowHeight, 2.0f, 0.8f, 0.8f);    // . 修正位置
+    drawKeycap(4.5f, zxcvRowHeight, 2.0f, 0.8f, 0.8f);    // / 修正位置
+    
+    // Right Shift (1.75倍宽)
+    drawKeycap(5.875f, zxcvRowHeight, 2.0f, 1.75f, 0.8f);  // 修正位置
+    
+    // 第6行：底行
+    // Ctrl (1.25倍宽)
+    drawKeycap(-7.375f, spaceRowHeight, 3.0f, 1.25f, 0.8f);
+    
+    // Win (1.25倍宽)
+    drawKeycap(-5.875f, spaceRowHeight, 3.0f, 1.25f, 0.8f);
+    
+    // Alt (1.25倍宽)
+    drawKeycap(-4.375f, spaceRowHeight, 3.0f, 1.25f, 0.8f);
+    
+    // 空格键 (6.25倍宽) - 保持原来的棱台绘制方式
     glPushMatrix();
-    glTranslatef(0, 0.1f, 3.0f);
+    glTranslatef(0, spaceRowHeight, 3.0f);
     setMaterial(keycapMaterial);
-    drawCube(6.0f, 0.12f, 0.8f);
-    glPopMatrix();
+    drawSpace();
+    glPopMatrix();  // 添加缺失的 glPopMatrix()
+    
+    // Alt (1.25倍宽)
+    drawKeycap(3.375f, spaceRowHeight, 3.0f, 1.25f, 0.8f);
+    
+    // Fn (1.25倍宽)
+    drawKeycap(4.875f, spaceRowHeight, 3.0f, 1.25f, 0.8f);
+    
+    // 方向键组 - 修正位置使其更紧凑
+    drawKeycap(6.0f, spaceRowHeight, 3.0f, 0.8f, 0.8f);   // 左
+    drawKeycap(7.0f, spaceRowHeight, 3.0f, 0.8f, 0.8f);   // 下
+    drawKeycap(8.0f, spaceRowHeight, 3.0f, 0.8f, 0.8f);   // 右
+    
+    // 上方向键（在第5行）
+    drawKeycap(7.0f, zxcvRowHeight, 2.0f, 0.8f, 0.8f);    // 上方向键位置修正
     
     // 左右连接器
     drawConnector(-7.0f, 0, 0);   // 左侧连接器
@@ -485,61 +944,46 @@ void drawMainKeyboard() {
     drawConnector(0, 0, -2.5f);   // 上侧连接器
 }
 
-// 绘制左侧扩展模块（游戏控制器风格）
+// 绘制左侧扩展模块（游戏控制器风格）- 修改为轨迹球设计
 void drawLeftModule() {
     if (!showLeftModule) return;
     
     glPushMatrix();
     glTranslatef(-10.0f, 0, 0);
     
-    // 模块底座 - 更有机的形状
+    // 模块底座 - 平整设计
     setMaterial(leftModuleMaterial);
     glTranslatef(0, -0.15f, 0);
     
     // 主底座
-    drawCube(4.0f, 0.3f, 5.0f);
-    
-    // 手柄握持区域
-    glTranslatef(0, -0.1f, 1.5f);
-    glRotatef(-15, 1, 0, 0);
-    drawCube(3.5f, 0.4f, 2.0f);
+    // drawCube(4.0f, 0.3f, 5.0f);
     
     glPopMatrix();
     
-    // 模拟摇杆区域（草图中的大圆形）
+    // 轨迹球区域（替换原来的摇杆）
     glPushMatrix();
-    glTranslatef(-10.0f, 0.3f, -1.0f);
+    glTranslatef(-10.0f, 0.2f, -1.0f);
     setMaterial(buttonMaterial);
     
-    // 摇杆底座
-    drawCylinder(0.8f, 0.1f);
+    // 轨迹球底座凹槽
+    // drawCylinder(1.0f, 0.15f);
     
-    // 摇杆本体
-    glTranslatef(0, 0.15f, 0);
-    drawSphere(0.4f);
+    // 轨迹球本体 - 没入一半露出一半
+    glTranslatef(0, 0, 0);  // 向上移动，使球体一半露出
+    Material ballMaterial = {{0.2f, 0.2f, 0.8f, 1.0f}, {0.3f, 0.3f, 0.9f, 1.0f}, {0.5f, 0.5f, 1.0f, 1.0f}, 64.0f};
+    setMaterial(ballMaterial);
+    drawSphere(0.5f);  // 稍大的球体
     
     glPopMatrix();
     
-    // 十字键区域
+    // 十字键区域 - 保持水平
     setMaterial(buttonMaterial);
-    float dpadSize = 0.5f;
-    drawKeycap(-10.0f, 0.15f, 0.5f, dpadSize);   // 上
-    drawKeycap(-10.0f, 0.15f, 1.5f, dpadSize);   // 下
-    drawKeycap(-10.5f, 0.15f, 1.0f, dpadSize);   // 左
-    drawKeycap(-9.5f, 0.15f, 1.0f, dpadSize);    // 右
-    
-    // 功能按钮（ABXY风格）
-    drawKeycap(-8.5f, 0.15f, -0.5f, 0.4f);  // A
-    drawKeycap(-8.5f, 0.15f, -1.5f, 0.4f);  // B
-    drawKeycap(-9.0f, 0.15f, -1.0f, 0.4f);  // X
-    drawKeycap(-8.0f, 0.15f, -1.0f, 0.4f);  // Y
-    
-    // 肩部按钮
-    glPushMatrix();
-    glTranslatef(-10.0f, 0.4f, -2.0f);
-    setMaterial(buttonMaterial);
-    drawCube(1.5f, 0.2f, 0.4f);
-    glPopMatrix();
+    glRotatef(3, 1, 0, 0);  // 轻微向后倾斜
+    float dpadSize = 0.6f;
+    drawKeycap(-10.0f, 0.2f, 0.5f, dpadSize, dpadSize);   // 上
+    drawKeycap(-10.0f, 0.2f, 1.5f, dpadSize, dpadSize);   // 下
+    drawKeycap(-10.5f, 0.2f, 1.0f, dpadSize, dpadSize);   // 左
+    drawKeycap(-9.5f, 0.2f, 1.0f, dpadSize, dpadSize);    // 右
     
     // 连接器
     drawConnector(-7.0f, 0, 0);
@@ -556,8 +1000,8 @@ void drawRightModule() {
     
     // 模块底座
     setMaterial(rightModuleMaterial);
-    glTranslatef(0, -0.15f, 0);
-    drawCube(4.0f, 0.3f, 5.0f);
+    // glTranslatef(0, -0.15f, 0);
+    // drawCube(4.0f, 0.3f, 5.0f);
     
     glPopMatrix();
     
@@ -565,7 +1009,7 @@ void drawRightModule() {
     float keySize = 0.7f;
     float keySpacing = 0.85f;
     
-    // 数字键盘布局（4x4）
+    // 数字键盘布局（4x4） - 修正调用
     const char numpadLayout[4][4] = {
         {'/', '*', '-', '+'},
         {'7', '8', '9', ' '},
@@ -577,26 +1021,27 @@ void drawRightModule() {
         for (int col = 0; col < 3; col++) {
             float x = 10.0f + (col - 1) * keySpacing;
             float z = (row - 1.5f) * keySpacing;
-            drawKeycap(x, 0.1f, z, keySize);
+            drawKeycap(x, (0.3f-row/25.0f), z, keySize, keySize);  // 添加depth参数
         }
     }
     
     // 大Enter键
     glPushMatrix();
-    glTranslatef(11.3f, 0.1f, 0.0f);
+    glTranslatef(11.3f, 0.2f, 0.0f);
+    glRotatef(3, 1, 0, 0);  // 旋转90度
     setMaterial(keycapMaterial);
     drawCube(keySize, 0.12f, keySpacing * 2);
     glPopMatrix();
     
     // 0键（双倍宽度）
     glPushMatrix();
-    glTranslatef(9.6f, 0.1f, 1.3f);
+    glTranslatef(9.6f, 0.15f, 2.0f);
     setMaterial(keycapMaterial);
     drawCube(keySpacing * 1.5f, 0.12f, keySize);
     glPopMatrix();
     
-    // 小数点键
-    drawKeycap(10.8f, 0.1f, 1.3f, keySize * 0.8f);
+    // 小数点键 - 修正调用
+    drawKeycap(10.8f, 0.15f, 2.0f, keySize, keySize);
     
     // 连接器
     drawConnector(7.0f, 0, 0);
@@ -624,7 +1069,7 @@ void drawTopModule() {
     setMaterial(buttonMaterial);
     
     // 旋钮底座
-    drawCylinder(0.8f, 0.2f);
+    // drawCylinder(0.8f, 0.2f);
     
     // 旋钮顶部
     glTranslatef(0, 0.15f, 0);
@@ -638,24 +1083,24 @@ void drawTopModule() {
     
     glPopMatrix();
     
-    // 控制按钮区域
+    // 控制按钮区域 - 修正调用
     for (int i = 0; i < 5; i++) {
         float x = -1.0f + i * 0.8f;
-        drawKeycap(x, 0.1f, -4.3f, 0.5f);
+        drawKeycap(x, 0.1f, -4.3f, 0.5f, 0.5f);  // 添加depth参数
     }
     
     // 显示屏区域（模拟）
-    glPushMatrix();
-    glTranslatef(2.5f, 0.05f, -5.0f);
-    setMaterial(keyboardMaterial);
-    drawCube(2.0f, 0.05f, 1.0f);
+    // glPushMatrix();
+    // glTranslatef(2.5f, 0.05f, -5.0f);
+    // setMaterial(keyboardMaterial);
+    // drawCube(2.0f, 0.05f, 1.0f);
     
-    // 显示屏框架
-    glTranslatef(0, 0.03f, 0);
-    Material screenMaterial = {{0.0f, 0.1f, 0.0f, 1.0f}, {0.0f, 0.3f, 0.0f, 1.0f}, {0.0f, 0.5f, 0.0f, 1.0f}, 32.0f};
-    setMaterial(screenMaterial);
-    drawCube(1.8f, 0.02f, 0.8f);
-    glPopMatrix();
+    // // 显示屏框架
+    // glTranslatef(0, 0.03f, 0);
+    // Material screenMaterial = {{0.0f, 0.1f, 0.0f, 1.0f}, {0.0f, 0.3f, 0.0f, 1.0f}, {0.0f, 0.5f, 0.0f, 1.0f}, 32.0f};
+    // setMaterial(screenMaterial);
+    // drawCube(1.8f, 0.02f, 0.8f);
+    // glPopMatrix();
     
     // 连接器
     drawConnector(0, 0, -2.5f);
@@ -678,17 +1123,39 @@ void display() {
     // 设置光照位置
     glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
     
-    // 绘制各个模块的外壳
+    // 绘制各个模块的外壳（每个都独立）
+    glPushMatrix();
     drawMainKeyboardShell();
-    drawLeftModuleShell();
-    drawRightModuleShell();
-    drawTopModuleShell();
+    glPopMatrix();
     
-    // 绘制各个模块
+    glPushMatrix();
+    drawLeftModuleShell();
+    glPopMatrix();
+    
+    glPushMatrix();
+    drawRightModuleShell();
+    glPopMatrix();
+    
+    glPushMatrix();
+    drawTopModuleShell();
+    glPopMatrix();
+    
+    // 绘制各个模块（每个都独立）
+    glPushMatrix();
     drawMainKeyboard();
+    glPopMatrix();
+    
+    glPushMatrix();
     drawLeftModule();
+    glPopMatrix();
+    
+    glPushMatrix();
     drawRightModule();
+    glPopMatrix();
+    
+    glPushMatrix();
     drawTopModule();
+    glPopMatrix();
     
     glutSwapBuffers();
 }
