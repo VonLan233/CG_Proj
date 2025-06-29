@@ -329,12 +329,12 @@ void drawMainKeyboardShell() {
     glVertex3f(-halfFrontWidth, halfHeight/3, halfDepth+1.0f);
     glVertex3f(-halfBackWidth, halfHeight/2, halfDepth);
 
-        // 左腕托左前面
+    // 左腕托前面
     glNormal3f(0, 0, 1);
-    glVertex3f(-halfBackWidth, halfHeight/3, halfDepth+1.0f);
-    glVertex3f(-halfFrontWidth+4.0f, halfHeight/3, halfDepth+1.0f);
-    glVertex3f(-halfFrontWidth+4.0f, -halfHeight, halfDepth+1.0f);
     glVertex3f(-halfBackWidth, -halfHeight, halfDepth+1.0f);
+    glVertex3f(-halfFrontWidth+4.0f, -halfHeight, halfDepth+1.0f);
+    glVertex3f(-halfFrontWidth+4.0f, halfHeight/3, halfDepth+1.0f);
+    glVertex3f(-halfBackWidth, halfHeight/3, halfDepth+1.0f);
 
 
     // 左腕托顶面
@@ -352,44 +352,46 @@ void drawMainKeyboardShell() {
     glVertex3f(-halfBackWidth+5.0f, -halfHeight, halfDepth);
 
     // 左腕托右侧面
-    glNormal3f(1, 0, 1);
+    glNormal3f(1, 0, 0);
     glVertex3f(-halfBackWidth+5.0f, -halfHeight, halfDepth);
-    glVertex3f(-halfFrontWidth+4.0f, -halfHeight, halfDepth+1.0f);
-    glVertex3f(-halfFrontWidth+4.0f, halfHeight/3, halfDepth+1.0f);
     glVertex3f(-halfBackWidth+5.0f, halfHeight/2, halfDepth);
+    glVertex3f(-halfFrontWidth+4.0f, halfHeight/3, halfDepth+1.0f);
+    glVertex3f(-halfFrontWidth+4.0f, -halfHeight, halfDepth+1.0f);
 
-    // 右腕托右侧面
+        // 右腕托右侧面
     glNormal3f(1, 0, 0);
     glVertex3f(halfBackWidth, -halfHeight, halfDepth);
     glVertex3f(halfBackWidth, halfHeight/2, halfDepth);
-    glVertex3f(halfFrontWidth, halfHeight/6, halfDepth+2.0f);
-    glVertex3f(halfFrontWidth, -halfHeight, halfDepth+2.0f);
+    glVertex3f(halfFrontWidth, halfHeight/3, halfDepth+1.0f);
+    glVertex3f(halfFrontWidth, -halfHeight, halfDepth+1.0f);
 
+    // 右腕托前面
+    glNormal3f(0, 0, 1);
+    glVertex3f(halfBackWidth-4.0f, -halfHeight, halfDepth+1.0f);
+    glVertex3f(halfFrontWidth, -halfHeight, halfDepth+1.0f);
+    glVertex3f(halfFrontWidth, halfHeight/3, halfDepth+1.0f);
+    glVertex3f(halfBackWidth-4.0f, halfHeight/3, halfDepth+1.0f);
 
-
-    // 腕托内右侧面
-    glNormal3f(1, 0, 0);
-    glVertex3f(halfBackWidth-4.0f, -halfHeight, halfDepth);
-    glVertex3f(halfBackWidth-3.0f, halfHeight/2, halfDepth);
-    glVertex3f(halfFrontWidth-3.0f, halfHeight/3, halfDepth+1.0f);
-    glVertex3f(halfFrontWidth-4.0f, -halfHeight, halfDepth+1.0f);
-
-
-    // 腕托右顶面
+    // 右腕托顶面
     glNormal3f(0, 1, 0);
     glVertex3f(halfBackWidth, halfHeight/2, halfDepth);
+    glVertex3f(halfBackWidth-5.0f, halfHeight/2, halfDepth);
+    glVertex3f(halfFrontWidth-4.0f, halfHeight/3, halfDepth+1.0f);
     glVertex3f(halfFrontWidth, halfHeight/3, halfDepth+1.0f);
-    glVertex3f(halfFrontWidth-2.0f, halfHeight/3, halfDepth+1.0f);
-    glVertex3f(halfBackWidth-3.0f, halfHeight/2, halfDepth);
 
-
-
-    // 腕托右底面
+    // 右腕托底面
     glNormal3f(0, -1, 0);
     glVertex3f(halfBackWidth, -halfHeight, halfDepth);
     glVertex3f(halfFrontWidth, -halfHeight, halfDepth+1.0f);
-    glVertex3f(halfFrontWidth-2.0f, -halfHeight, halfDepth+1.0f);
-    glVertex3f(halfBackWidth-3.0f, -halfHeight, halfDepth); 
+    glVertex3f(halfFrontWidth-4.0f, -halfHeight, halfDepth+1.0f);
+    glVertex3f(halfBackWidth-5.0f, -halfHeight, halfDepth);
+
+    // 右腕托左侧面（内侧）
+    glNormal3f(-1, 0, 0);
+    glVertex3f(halfBackWidth-5.0f, -halfHeight, halfDepth);
+    glVertex3f(halfFrontWidth-4.0f, -halfHeight, halfDepth+1.0f);
+    glVertex3f(halfFrontWidth-4.0f, halfHeight/3, halfDepth+1.0f);
+    glVertex3f(halfBackWidth-5.0f, halfHeight/2, halfDepth);
 
     glEnd();
     
@@ -640,28 +642,6 @@ void drawTopModuleShell() {
     glVertex3f(halfFrontWidth, -halfHeight, halfDepth);
     
     glEnd();
-    
-    // 添加旋钮专用区域凹槽（左侧）
-    glPushMatrix();
-    glTranslatef(-2.5f, halfHeight/2 + 0.1f, 0);
-    setMaterial(accentMaterial);
-    drawCylinder(1.0f, 0.15f);  // 旋钮凹槽
-    glPopMatrix();
-    
-    // 添加控制按钮区域平台（中间）
-    glPushMatrix();
-    glTranslatef(0, halfHeight/2 + 0.05f, 0);
-    setMaterial(accentMaterial);
-    drawCube(4.0f, 0.1f, 2.0f);  // 按钮控制区域
-    glPopMatrix();
-    
-    // 添加显示屏区域凹槽（右侧）
-    glPushMatrix();
-    glTranslatef(2.5f, halfHeight/2 + 0.08f, 0);
-    setMaterial(accentMaterial);
-    drawCube(2.5f, 0.08f, 1.5f);  // 显示屏区域
-    glPopMatrix();
-    
     glPopMatrix();
     
     glPopMatrix();
