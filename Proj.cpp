@@ -5,7 +5,7 @@
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 // 窗口尺寸
-const int WINDOW_WIDTH = 1200;
+const int WINDOW_WIDTH = 1600;
 const int WINDOW_HEIGHT = 800;
 
 // 相机控制变量
@@ -20,6 +20,17 @@ bool showLeftModule = true;
 bool showRightModule = true;
 bool showTopModule = true;
 float animationTime = 0.0f;
+
+// 添加以下动画控制变量
+float leftModuleOffset = 0.0f;
+float rightModuleOffset = 0.0f;
+float topModuleOffset = 0.0f;
+float targetLeftOffset = 0.0f;
+float targetRightOffset = 0.0f;
+float targetTopOffset = 0.0f;
+bool animateLeft = false;
+bool animateRight = false;
+bool animateTop = false;
 
 // 光照参数
 GLfloat lightPosition[] = {8.0f, 8.0f, 8.0f, 1.0f};
@@ -398,6 +409,7 @@ void drawMainKeyboardShell() {
     glPopMatrix();
 }
 
+
 // 绘制左侧模块外壳（类似主键盘的直角梯形设计）
 void drawLeftModuleShell() {
     if (!showLeftModule) return;
@@ -491,7 +503,7 @@ void drawRightModuleShell() {
     if (!showRightModule) return;
     
     glPushMatrix();
-    glTranslatef(10.0f, 0, 0);
+    glTranslatef(10.25f, 0, 0);
     
     setMaterial(rightModuleMaterial);
     
@@ -640,6 +652,7 @@ void drawTopModuleShell() {
     glVertex3f(halfBackWidth, halfHeight*(1+2/7.0), -halfDepth);
     glVertex3f(halfFrontWidth, halfHeight, halfDepth);
     glVertex3f(halfFrontWidth, -halfHeight, halfDepth);
+
     
     glEnd();
     glPopMatrix();
@@ -724,7 +737,7 @@ void drawSpace() {
     glBegin(GL_QUADS);
     
     float spaceWidth = 6.25f * 1.0f; // 空格键宽度
-    float spaceDepth = 0.8f;
+    float spaceDepth = 0.7f;
     float spaceHeight = 0.12f;
     float topScale = 0.85f;
     
@@ -785,9 +798,9 @@ void drawMainKeyboard() {
     
     // 键盘主底座 - 更厚更有立体感
     setMaterial(keyboardMaterial);
-    glTranslatef(0, -0.2f, 0);
-    glRotatef(3, 1, 0, 0);  // 轻微向后倾斜
-    drawCube(15.0f, 0.3f, 7.0f);
+    // glTranslatef(0, -0.2f, 0);
+    // glRotatef(3, 1, 0, 0);  // 轻微向后倾斜
+    // drawCube(15.0f, 0.3f, 7.0f);
     
     glPopMatrix();
     
@@ -899,9 +912,9 @@ void drawMainKeyboard() {
     
     // 空格键 (6.25倍宽) - 保持原来的棱台绘制方式
     glPushMatrix();
-    glTranslatef(0, spaceRowHeight, 3.0f);
+    glTranslatef(0, spaceRowHeight, 0);
     setMaterial(keycapMaterial);
-    drawSpace();
+    drawKeycap(-0.5f, spaceRowHeight, 3.0f, 6.75f, 0.8f); // 修正位置
     glPopMatrix();  // 添加缺失的 glPopMatrix()
     
     // Alt (1.25倍宽)
@@ -919,9 +932,9 @@ void drawMainKeyboard() {
     drawKeycap(7.0f, zxcvRowHeight, 2.0f, 0.8f, 0.8f);    // 上方向键位置修正
     
     // 左右连接器
-    drawConnector(-7.0f, 0, 0);   // 左侧连接器
-    drawConnector(7.0f, 0, 0);    // 右侧连接器
-    drawConnector(0, 0, -2.5f);   // 上侧连接器
+    // drawConnector(-7.0f, 0, 0);   // 左侧连接器
+    // drawConnector(7.0f, 0, 0);    // 右侧连接器
+    // drawConnector(0, 0, -2.5f);   // 上侧连接器
 }
 
 // 绘制左侧扩展模块（游戏控制器风格）- 修改为轨迹球设计
@@ -952,7 +965,7 @@ void drawLeftModule() {
     glTranslatef(0, 0, 0);  // 向上移动，使球体一半露出
     Material ballMaterial = {{0.2f, 0.2f, 0.8f, 1.0f}, {0.3f, 0.3f, 0.9f, 1.0f}, {0.5f, 0.5f, 1.0f, 1.0f}, 64.0f};
     setMaterial(ballMaterial);
-    drawSphere(0.5f);  // 稍大的球体
+    drawSphere(0.7f);  // 稍大的球体
     
     glPopMatrix();
     
@@ -960,13 +973,15 @@ void drawLeftModule() {
     setMaterial(buttonMaterial);
     glRotatef(3, 1, 0, 0);  // 轻微向后倾斜
     float dpadSize = 0.6f;
-    drawKeycap(-10.0f, 0.2f, 0.5f, dpadSize, dpadSize);   // 上
-    drawKeycap(-10.0f, 0.2f, 1.5f, dpadSize, dpadSize);   // 下
-    drawKeycap(-10.5f, 0.2f, 1.0f, dpadSize, dpadSize);   // 左
-    drawKeycap(-9.5f, 0.2f, 1.0f, dpadSize, dpadSize);    // 右
+    drawKeycap(-10.0f, 0.3f, 0.5f, dpadSize, dpadSize);   // 上
+    drawKeycap(-10.0f, 0.3f, 1.5f, dpadSize, dpadSize);   // 下
+    drawKeycap(-10.5f, 0.3f, 1.0f, dpadSize, dpadSize);   // 左
+    drawKeycap(-9.5f, 0.3f, 1.0f, dpadSize, dpadSize);    // 右
     
     // 连接器
-    drawConnector(-7.0f, 0, 0);
+    glRotatef(90, 0, 1, 0);  // 轻微向后倾斜
+    glTranslatef(0, 0,-8.5f);
+    drawConnector(0, 0, 0);
     
     glPopMatrix();
 }
@@ -1007,7 +1022,7 @@ void drawRightModule() {
     
     // 大Enter键
     glPushMatrix();
-    glTranslatef(11.3f, 0.2f, 0.0f);
+    glTranslatef(11.5f, 0.2f, 0.0f);
     glRotatef(3, 1, 0, 0);  // 旋转90度
     setMaterial(keycapMaterial);
     drawCube(keySize, 0.12f, keySpacing * 2);
@@ -1024,70 +1039,43 @@ void drawRightModule() {
     drawKeycap(10.8f, 0.15f, 2.0f, keySize, keySize);
     
     // 连接器
-    drawConnector(7.0f, 0, 0);
+    glRotatef(-90, 0, 1, 0);  // 轻微向后倾斜
+    glTranslatef(0, 0,-8.4f);
+    drawConnector(0, 0, 0);
     
     glPopMatrix();
 }
 
-// 绘制上侧扩展模块（草图中的顶部模块）
+// 绘制上侧扩展模块（草图中的顶部模块）- 使用绝对坐标
 void drawTopModule() {
     if (!showTopModule) return;
     
-    glPushMatrix();
-    glTranslatef(0, 0, -5.0f);
-    
-    // 模块底座
-    setMaterial(topModuleMaterial);
-    glTranslatef(0, -0.15f, 0);
-    drawCube(8.0f, 0.3f, 2.5f);
-    
-    glPopMatrix();
-    
-    // 大旋钮（草图中显著的圆形元素）
-    glPushMatrix();
-    glTranslatef(-2.0f, 0.25f, -5.0f);
-    setMaterial(buttonMaterial);
-    
-    // 旋钮底座
-    // drawCylinder(0.8f, 0.2f);
-    
-    // 旋钮顶部
-    glTranslatef(0, 0.15f, 0);
-    drawCylinder(0.6f, 0.1f);
-    
-    // 旋钮指示器
-    glPushMatrix();
-    glTranslatef(0.3f, 0.05f, 0);
-    drawCube(0.1f, 0.02f, 0.05f);
-    glPopMatrix();
-    
-    glPopMatrix();
-    
-    // 控制按钮区域 - 修正调用
+    // === 控制按钮区域（5个按钮）===
     for (int i = 0; i < 5; i++) {
-        float x = -1.0f + i * 0.8f;
-        drawKeycap(x, 0.1f, -4.3f, 0.5f, 0.5f);  // 添加depth参数
+        glPushMatrix();
+        glTranslatef(-1.0f + i * 0.8f, 0.5f, -4.3f);  // 绝对坐标
+        setMaterial(keycapMaterial);
+        glScalef(0.5f * 0.85f, 0.12f, 0.5f * 0.85f);
+        glutSolidCube(1.0);
+        glPopMatrix();
     }
     
-    // 显示屏区域（模拟）
-    // glPushMatrix();
-    // glTranslatef(2.5f, 0.05f, -5.0f);
-    // setMaterial(keyboardMaterial);
-    // drawCube(2.0f, 0.05f, 1.0f);
-    
-    // // 显示屏框架
-    // glTranslatef(0, 0.03f, 0);
-    // Material screenMaterial = {{0.0f, 0.1f, 0.0f, 1.0f}, {0.0f, 0.3f, 0.0f, 1.0f}, {0.0f, 0.5f, 0.0f, 1.0f}, 32.0f};
-    // setMaterial(screenMaterial);
-    // drawCube(1.8f, 0.02f, 0.8f);
-    // glPopMatrix();
-    
+    // === 中间投影仪主体圆柱 ===
+    glPushMatrix();
+    glTranslatef(0,  -0.5, -6.1f);  // 绝对坐标
+    glRotatef(225, 1, 0, 0);  // 水平方向
+    setMaterial(buttonMaterial);
+    drawCylinder(0.7f, 1.0f);
+    glPopMatrix();
+
+    // === 连接器 ===
+    glPushMatrix();
     // 连接器
-    drawConnector(0, 0, -2.5f);
-    
+    // glRotatef(-90, 0, 1, 0);  // 轻微向后倾斜
+    glTranslatef(0, 0,-3.5f);
+    drawConnector(0, 0, 0);
     glPopMatrix();
 }
-
 // 显示回调函数
 void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -1104,39 +1092,56 @@ void display() {
     glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
     
     // 绘制各个模块的外壳（每个都独立）
+// 绘制各个模块的外壳（每个都独立，带动画）
+
     glPushMatrix();
+    glColor3f(0.45f,0.25f,0.65f);
     drawMainKeyboardShell();
     glPopMatrix();
-    
+
+    // 绘制各个模块的外壳（每个都独立，带动画）
     glPushMatrix();
+    glTranslatef(-leftModuleOffset, 0, 0);  // 左模块动画偏移
+    glColor3f(0.15f,0.3f,0.8f);
     drawLeftModuleShell();
     glPopMatrix();
-    
+
     glPushMatrix();
+    glTranslatef(rightModuleOffset, 0, 0);  // 右模块动画偏移
+    glColor3f(0.9f,0.15f,0.15f);
     drawRightModuleShell();
     glPopMatrix();
-    
+
     glPushMatrix();
+    glTranslatef(0, 0, -topModuleOffset);   // 上模块动画偏移
+    glColor3f(0.08f,0.12f,0.25f);
     drawTopModuleShell();
     glPopMatrix();
-    
-    // 绘制各个模块（每个都独立）
+
+    // 绘制各个模块（每个都独立，带动画）
     glPushMatrix();
+    glColor3f(0.2f,0.75f,0.3f);
     drawMainKeyboard();
     glPopMatrix();
-    
+
     glPushMatrix();
+    glTranslatef(-leftModuleOffset, 0, 0);
+    glColor3f(1.0f,0.5f,0.1f);
     drawLeftModule();
     glPopMatrix();
-    
+
     glPushMatrix();
+    glTranslatef(rightModuleOffset, 0, 0);
+    glColor3f(1.0f,0.5f,0.1f);
     drawRightModule();
     glPopMatrix();
-    
+
     glPushMatrix();
+    glTranslatef(0, 0, -topModuleOffset);
+    glColor3f(0.6f,0.6f,0.65f);
     drawTopModule();
     glPopMatrix();
-    
+        
     glutSwapBuffers();
 }
 
@@ -1149,9 +1154,49 @@ void reshape(int width, int height) {
     glMatrixMode(GL_MODELVIEW);
 }
 
-// 空闲回调（用于动画）
 void idle() {
     animationTime += 0.01f;
+    
+    // 模块动画逻辑 - 平滑移动
+    float speed = 0.2f;  // 动画速度
+    bool needsRedraw = false;
+    
+    // 左模块动画
+    if (animateLeft) {
+        float diff = targetLeftOffset - leftModuleOffset;
+        if (abs(diff) > 0.05f) {
+            leftModuleOffset += diff * speed;
+            needsRedraw = true;
+        } else {
+            leftModuleOffset = targetLeftOffset;
+            animateLeft = false;
+        }
+    }
+    
+    // 右模块动画
+    if (animateRight) {
+        float diff = targetRightOffset - rightModuleOffset;
+        if (abs(diff) > 0.05f) {
+            rightModuleOffset += diff * speed;
+            needsRedraw = true;
+        } else {
+            rightModuleOffset = targetRightOffset;
+            animateRight = false;
+        }
+    }
+    
+    // 上模块动画
+    if (animateTop) {
+        float diff = targetTopOffset - topModuleOffset;
+        if (abs(diff) > 0.05f) {
+            topModuleOffset += diff * speed;
+            needsRedraw = true;
+        } else {
+            topModuleOffset = targetTopOffset;
+            animateTop = false;
+        }
+    }
+    
     glutPostRedisplay();
 }
 
@@ -1195,16 +1240,19 @@ void keyboard(unsigned char key, int x, int y) {
             exit(0);
             break;
         case '1':
-            showLeftModule = !showLeftModule;
-            std::cout << "左侧模块: " << (showLeftModule ? "显示" : "隐藏") << std::endl;
+            targetLeftOffset = (targetLeftOffset == 0.0f) ? 12.0f : 0.0f;
+            animateLeft = true;  // 使用正确的变量名
+            std::cout << "左侧模块动画: " << (targetLeftOffset == 0.0f ? "收回" : "展开") << std::endl;
             break;
         case '2':
-            showRightModule = !showRightModule;
-            std::cout << "右侧模块: " << (showRightModule ? "显示" : "隐藏") << std::endl;
+            targetRightOffset = (targetRightOffset == 0.0f) ? 12.0f : 0.0f;
+            animateRight = true;  // 使用正确的变量名
+            std::cout << "右侧模块动画: " << (targetRightOffset == 0.0f ? "收回" : "展开") << std::endl;
             break;
         case '3':
-            showTopModule = !showTopModule;
-            std::cout << "上侧模块: " << (showTopModule ? "显示" : "隐藏") << std::endl;
+            targetTopOffset = (targetTopOffset == 0.0f) ? 8.0f : 0.0f;
+            animateTop = true;  // 使用正确的变量名
+            std::cout << "上侧模块动画: " << (targetTopOffset == 0.0f ? "收回" : "展开") << std::endl;
             break;
         case 'r':
         case 'R':
